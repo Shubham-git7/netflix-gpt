@@ -1,6 +1,18 @@
 # Neflix GPT
  - Create React App
  - Configured TailwindCss
+ - header
+ - Routhing of app
+ - Login Form
+ - SignUp Form
+ - UseRef hook
+ - Firebase Setup
+ - Deploying our app to Production
+ - Create SignUp User Account 
+ - Implement Sign In user Api
+ - Created Redux Store with userslice 
+ - Implemented Sign Out 
+ - Update Profile
 
 # Features
 - Login/Signup

@@ -1,63 +1,67 @@
 import React, { useRef, useState } from 'react';
 import { checkValidData } from '../utils/validate';
 import Header from './Header';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from '../utils/firebase';
+import { useNavigate } from 'react-router-dom';
+import { addUser } from '../utils/userSlice';
+import { useDispatch } from 'react-redux';
 
 const Login = () => {
-
+  const navigate = useNavigate();
   const [isSignInForm, setIsSignUpForm] = useState(true);
-  const [errorMessege, SetErrormessege] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
-  const email = useRef(null);
-  const password = useRef(null);
+  // Creating refs for form inputs
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+  const nameRef = useRef(null); // Ref for the name input, used only in the sign-up form 
+  const dispatch = useDispatch();
 
   const toggleSignInForm = () => {
     setIsSignUpForm(!isSignInForm);
-  }
+  };
 
-  const handlebuttonsClick = () => {
-    //validition form form data
-    // checkValidData email or password
-    // console.log(email);
-    const message = checkValidData(email.current.value, password.current.value);
-    SetErrormessege(message);
+  const handleButtonsClick = () => {
+    // Getting values from refs
+    const email = emailRef.current.value;
+    const password = passwordRef.current.value;
+    const name = nameRef.current ? nameRef.current.value : ''; // Check if nameRef exists before accessing its value
+
+    const message = checkValidData(email, password);
+    setErrorMessage(message);
 
     if (message) return;
 
     if (!isSignInForm) {
-      //signup logic
-      createUserWithEmailAndPassword(auth, email.current.value, password.current.value)
+      // Sign-up logic
+      createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          // Signed up 
           const user = userCredential.user;
-          console.log(user);
-          // ...
+          updateProfile(user, { displayName: name }) // Update profile with display name
+            .then(() => {
+              const { uid, email, displayName } = auth.currentUser;
+              dispatch(addUser({ uid, email, displayName }));
+              navigate("/browse");
+            })
+            .catch((error) => {
+              setErrorMessage(error.message);
+            });
         })
         .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          SetErrormessege(errorCode + "-" + errorMessage)
-
-          // ..
+          setErrorMessage(error.code + "-" + error.message);
         });
     } else {
-      //signIn Logic
-     
-      signInWithEmailAndPassword(auth, email.current.value, password.current.value)
-        .then((userCredential) => {
-          // Signed in 
-          const user = userCredential.user;
-          // ...
+      // Sign-in logic
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          navigate("/browse");
         })
         .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          SetErrormessege(errorCode + "-" + errorMessage)
+          setErrorMessage(error.code + "-" + error.message);
         });
     }
-
-  }
+  };
 
   return (
     <div className="relative min-h-screen">
@@ -71,34 +75,40 @@ const Login = () => {
         <div className="absolute inset-0 bg-black opacity-50"></div>
       </div>
       <div className="relative z-10 flex justify-center items-center min-h-screen pt-32">
-        <form onSubmit={(e) => e.preventDefault()} className="relative p-12 bg-black bg-opacity-60 w-full max-w-sm h-auto min-h-[400px] mx-auto rounded flex flex-col ">
+        <form onSubmit={(e) => e.preventDefault()} className="relative p-12 bg-black bg-opacity-60 w-full max-w-sm h-auto min-h-[400px] mx-auto rounded flex flex-col">
           <h1 className="text-white mx-3 text-2xl font-bold mb-6">{isSignInForm ? "Sign-In " : "Sign-Up"}</h1>
 
-          {!isSignInForm && (<input
-            type="text"
-            placeholder="Full Name"
-            className="p-3 m-3 w-full bg-slate-900 text-white text-sm rounded inset-0"
-          />)}
+          {!isSignInForm && (
+            <input
+              type="text"
+              ref={nameRef} // Reference for the name input
+              placeholder="Full Name"
+              className="p-3 m-3 w-full bg-slate-900 text-white text-sm rounded inset-0"
+            />
+          )}
           <input
-            type="text" ref={email}
+            type="text"
+            ref={emailRef} // Reference for the email input
             placeholder="Email Address"
             className="p-3 m-3 w-full bg-slate-900 text-white text-sm rounded"
           />
           <input
-            type="password" ref={password}
+            type="password"
+            ref={passwordRef} // Reference for the password input
             placeholder="Password"
             className="p-3 m-3 w-full bg-slate-900 text-white text-sm rounded"
           />
-          <p className='text-red-500'>{errorMessege}</p>
+          <p className='text-red-500'>{errorMessage}</p>
           <button
             type="submit"
-            className="p-1 m-3 w-full bg-red-700 hover:bg-red-900 text-white text-lg rounded transition duration-300" onClick={handlebuttonsClick}
+            className="p-1 m-3 w-full bg-red-700 hover:bg-red-900 text-white text-lg rounded transition duration-300"
+            onClick={handleButtonsClick} // Handling button click
           >
-            {isSignInForm ? " Sign-In" : "Sign-up"}
+            {isSignInForm ? "Sign-In" : "Sign-up"}
           </button>
           <div className="flex gap-0">
-            <p className='relative z-50 text-white text-left mx-3 opacity-70'>{isSignInForm ? "New to Netflix?" : "IfAlready exit?"}</p>
-            <p className='relative z-50 text-white text-leftopacity-70 cursor-pointer ' onClick={toggleSignInForm}>{isSignInForm ? "Sign up now." : "Sign in now."}</p>
+            <p className='relative z-50 text-white text-left mx-3 opacity-70'>{isSignInForm ? "New to Netflix?" : "Already have an account?"}</p>
+            <p className='relative z-50 text-white text-left opacity-70 cursor-pointer' onClick={toggleSignInForm}>{isSignInForm ? "Sign up now." : "Sign in now."}</p>
           </div>
         </form>
       </div>
