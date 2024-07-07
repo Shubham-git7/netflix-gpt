@@ -3,19 +3,19 @@ import { checkValidData } from '../utils/validate';
 import Header from './Header';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from '../utils/firebase';
-import { useNavigate } from 'react-router-dom';
+
 import { addUser } from '../utils/userSlice';
 import { useDispatch } from 'react-redux';
 
 const Login = () => {
-  const navigate = useNavigate();
+
   const [isSignInForm, setIsSignUpForm] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
 
   // Creating refs for form inputs
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
-  const nameRef = useRef(null); // Ref for the name input, used only in the sign-up form 
+  const nameRef = useRef(null); // Ref for the name input, used only in the sign-up form
   const dispatch = useDispatch();
 
   const toggleSignInForm = () => {
@@ -42,7 +42,7 @@ const Login = () => {
             .then(() => {
               const { uid, email, displayName } = auth.currentUser;
               dispatch(addUser({ uid, email, displayName }));
-              navigate("/browse");
+    
             })
             .catch((error) => {
               setErrorMessage(error.message);
@@ -55,7 +55,9 @@ const Login = () => {
       // Sign-in logic
       signInWithEmailAndPassword(auth, email, password)
         .then(() => {
-          navigate("/browse");
+          const { uid, email, displayName } = auth.currentUser;
+          dispatch(addUser({ uid, email, displayName }));
+   
         })
         .catch((error) => {
           setErrorMessage(error.code + "-" + error.message);
