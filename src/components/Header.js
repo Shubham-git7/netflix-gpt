@@ -7,6 +7,7 @@ import { removeUser } from "../utils/userSlice";
 import { addUser } from "../utils/userSlice";
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect } from "react";
+import { LOGO } from "../utils/constants";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ const Header = () => {
     <div className="absolute top-0 left-0 right-0  px-8  z-10 flex justify-between bg-gradient-to-b from-black">
       <img
         className="w-35 h-20"
-        src="https://cdn.cookielaw.org/logos/dd6b162f-1a32-456a-9cfe-897231c7763c/4345ea78-053c-46d2-b11e-09adaef973dc/Netflix_Logo_PMS.png"
+        src={LOGO}
         alt="Netflix Logo"
       />
       {user && (

@@ -38,7 +38,7 @@ const Login = () => {
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const user = userCredential.user;
-          updateProfile(user, { displayName: name }) // Update profile with display name
+          updateProfile(user, { displayName: name}) // Update profile with display name
             .then(() => {
               const { uid, email, displayName } = auth.currentUser;
               dispatch(addUser({ uid, email, displayName }));
