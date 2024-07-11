@@ -8,6 +8,7 @@ import { addUser } from "../utils/userSlice";
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect } from "react";
 import { LOGO } from "../utils/constants";
+import { toggleGptSearchView } from "../utils/gptSlice";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -41,6 +42,11 @@ const Header = () => {
   }
     , []);
 
+    const handleGptSearchClick = () => {
+      //toggle using redux 
+        dispatch(toggleGptSearchView());
+    }
+
   return (
     <div className="absolute top-0 left-0 right-0  px-8  z-10 flex justify-between bg-gradient-to-b from-black">
       <img
@@ -50,6 +56,12 @@ const Header = () => {
       />
       {user && (
         <div className="flex justify-center items-center gap-2">
+
+<button className=" text-white font-bold py-0.5  px-3 mr-4 border-b-4 border-blue-700 hover:border-blue-400 rounded-2xl"
+    onClick={handleGptSearchClick}
+>
+  GPT-Search
+</button>
           <img className=' w-8 h-8 rounded-lg' alt='user avatar' src='https://icon-library.com/images/netflix-icon-transparent/netflix-icon-transparent-29.jpg' />
           <span className="text-white">{user.displayName}</span> {/* Display user's name */}
           <button onClick={handleSignOut} className="font-bold text-white hover:text-black">(Sign-Out)</button>
