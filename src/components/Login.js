@@ -3,9 +3,9 @@ import { checkValidData } from '../utils/validate';
 import Header from './Header';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from '../utils/firebase';
-
 import { addUser } from '../utils/userSlice';
 import { useDispatch } from 'react-redux';
+import { BG_URL } from '../utils/constants';
 
 const Login = () => {
 
@@ -17,7 +17,6 @@ const Login = () => {
   const passwordRef = useRef(null);
   const nameRef = useRef(null); // Ref for the name input, used only in the sign-up form
   const dispatch = useDispatch();
-
   const toggleSignInForm = () => {
     setIsSignUpForm(!isSignInForm);
   };
@@ -27,7 +26,6 @@ const Login = () => {
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
     const name = nameRef.current ? nameRef.current.value : ''; // Check if nameRef exists before accessing its value
-
     const message = checkValidData(email, password);
     setErrorMessage(message);
 
@@ -42,7 +40,6 @@ const Login = () => {
             .then(() => {
               const { uid, email, displayName } = auth.currentUser;
               dispatch(addUser({ uid, email, displayName }));
-    
             })
             .catch((error) => {
               setErrorMessage(error.message);
@@ -70,7 +67,7 @@ const Login = () => {
       <Header />
       <div className="absolute inset-0">
         <img
-          src="https://assets.nflxext.com/ffe/siteui/vlv3/335ddde7-3955-499c-b4cc-ca2eb7e1ae71/a7d20bc1-831c-4f9d-8153-11bdf7a08d23/IN-en-20240624-POP_SIGNUP_TWO_WEEKS-perspective_WEB_13cda806-d858-493e-b4aa-f2792ff965dc_small.jpg"
+         src={BG_URL}
           alt="Background"
           className="w-full h-full object-cover"
         />

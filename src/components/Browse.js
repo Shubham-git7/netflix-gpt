@@ -22,7 +22,7 @@ const Browse = () => {
           <MainContainer></MainContainer>
           <SecondaryContainer></SecondaryContainer>
         </>
-      )
+      ) 
       }
     </div>
   )
